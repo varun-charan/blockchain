@@ -40,14 +40,14 @@ previous_block = blockchain[0]
 num_of_blocks_to_add = 20
 
 # Add blocks to the chain
-for i in range(0, num_of_blocks_to_add):
+'''for i in range(0, num_of_blocks_to_add):
   block_to_add = next_block(previous_block)
   blockchain.append(block_to_add)
   previous_block = block_to_add
   # Tell everyone about it!
   print("Block #{} has been added to the blockchain!".format(block_to_add.index))
   print("Hash: {}\n".format(block_to_add.hash))
-
+'''
 from flask import Flask
 from flask import request
 node = Flask(__name__)
@@ -55,6 +55,9 @@ node = Flask(__name__)
 # Store the transactions that
 # this node has in a list
 this_nodes_transactions = []
+# Store the transactions that
+# other node has generated.
+other_nodes_transactions = []
 
 @node.route('/txion', methods=['POST'])
 def transaction():
@@ -114,10 +117,15 @@ def mine():
   )
   # Now we can gather the data needed
   # to create the new block
-  new_block_data = {
+  if other_nodes_transactions != 0:
+    new_block_data = {
     "proof-of-work": proof,
-    "transactions": list(this_nodes_transactions)
-  }
+    "transactions": list(other_nodes_transactions)}
+  else:
+    new_block_data = {
+    "proof-of-work": proof,
+    "transactions": list(this_nodes_transactions)}
+
   new_block_index = last_block.index + 1
   new_block_timestamp = this_timestamp = date.datetime.now()
   last_block_hash = last_block.hash
